@@ -206,8 +206,65 @@ def test_refuses_push_to_main() -> None:
     assert refuses_push(feature, "cursor/m0-scaffold") is not None
     other = "refs/heads/cursor/m0-scaffold aaa refs/heads/cursor/m0-scaffold bbb\n"
     assert refuses_push(other, "cursor/m0-scaffold") is None
+    assert refuses_push("", "cursor/m0-scaffold", remote_branch="refs/heads/main") is not None
+    assert (
+        refuses_push(
+            "",
+            "cursor/m0-scaffold",
+            remote_branch="refs/heads/cursor/m0-scaffold",
+        )
+        is None
+    )
     with pytest.raises(SystemExit):
         refuses_push("not-a-ref-line\n", "cursor/m0-scaffold")
+
+
+def test_pre_push_script_refuses_pre_commit_remote_branch() -> None:
+    """pre-commit leaves stdin empty and sets PRE_COMMIT_REMOTE_BRANCH."""
+    env = os.environ.copy()
+    env["PRE_COMMIT_REMOTE_BRANCH"] = "refs/heads/main"
+    result = subprocess.run(
+        [sys.executable, "-m", "tools.hooks.pre_push"],
+        input="",
+        text=True,
+        capture_output=True,
+        cwd=ROOT,
+        env=env,
+        check=False,
+    )
+    assert result.returncode == 1
+    assert "push to main is refused" in result.stderr
+    assert "pytest" not in result.stdout
+
+
+def test_pre_commit_hook_impl_refuses_push_to_main() -> None:
+    """The managed pre-push hook must refuse main without running make check."""
+    sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    stdin = f"refs/heads/cursor/m0-scaffold {sha} refs/heads/main {sha}\n"
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pre_commit",
+            "hook-impl",
+            "--config=.pre-commit-config.yaml",
+            "--hook-type=pre-push",
+            "--hook-dir",
+            str(ROOT / ".git" / "hooks"),
+            "--",
+            "origin",
+            "https://example.invalid/qec-bench.git",
+        ],
+        input=stdin,
+        text=True,
+        capture_output=True,
+        cwd=ROOT,
+        check=False,
+    )
+    assert result.returncode != 0
+    combined = result.stdout + result.stderr
+    assert "push to main is refused" in combined
+    assert "passed in" not in combined
 
 
 def test_stop_response() -> None:
