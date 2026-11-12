@@ -1,0 +1,24 @@
+---
+description: Branches, commits, and hooks for qec-bench
+alwaysApply: true
+---
+
+# Workflow
+
+- `main` is protected. Open a pull request. Do not merge it. Do not
+  `git push --force`, `git push origin main`, or `git reset --hard` on `main`.
+- Branch: `<agent>/<issue_number>_<slug>`. Comment `claim` and add
+  `in-progress` before editing. One issue, one branch, one pull request.
+  Stay inside the issue's file scope.
+- Commit messages: `type(scope): summary`. Scope is one of `task`, `verify`,
+  `reference`, `taskfmt`, `tooling`, `docs`, `ci`, `deps`, `spec`.
+- Pull request sections: issue link, spec reference (`spec/...#anchor`),
+  contract changes (or "none" plus an ADR link), the state each claim reached,
+  local `make check` output, what is not verified, open science questions.
+- Aim under 400 changed lines excluding `data/` and lockfiles.
+- Rebase on `main` before review. The owner squash-merges.
+- `make check` must pass before the work is called done. Paste the output.
+  The stop hook runs the same target.
+- Hooks deny edits under `spec/` and `data/gold/`. Read those files. Do not
+  write them. Point the denial at the `needs-science-decision` issue flow.
+- Update `PROGRESS.md` when a milestone or task status changes.

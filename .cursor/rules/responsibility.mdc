@@ -1,0 +1,22 @@
+---
+description: Owner-only science and agent territory for qec-bench
+alwaysApply: true
+---
+
+# Responsibility
+
+- `spec/` is owner-only. It holds physics, conventions, tolerances, gold-data
+  provenance, and the task list. Agents do not edit it.
+- `data/gold/` is owner-only. Curated literature values with citations live
+  there. Agents do not add files.
+- If a spec point is missing or ambiguous, open a GitHub issue labelled
+  `needs-science-decision`, quote the exact spec line, list the concrete
+  options, and stop that piece of work. Do not guess a convention, tolerance,
+  or constant.
+- Do not set `OWNER_SPEC_EDIT`.
+- `src/`, `tasks/`, `tests/`, `tools/`, and `docs/` are agent territory. Every
+  behaviour traces to a line in `spec/` or an ADR in `docs/adr/`.
+- `example_000_smoke` is a format demo, not a scientific result. Do not copy
+  its token into a real task as a tolerance.
+- No live or paid LLM calls in the test suite.
+- Package name: `qecbench`.

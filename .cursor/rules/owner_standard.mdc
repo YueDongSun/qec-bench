@@ -1,0 +1,29 @@
+---
+description: Owner coding standard for qec-bench
+alwaysApply: true
+---
+
+# Owner standard
+
+This matches `AGENTS.md` section 4.0. It overrides a tool default.
+
+- snake_case for project-owned paths and identifiers: directories, modules,
+  task ids, scripts, and labels where the host allows it.
+- Keep external names: `AGENTS.md`, `README.md`, `Dockerfile`, `pyproject.toml`,
+  `task.toml`, `.pre-commit-config.yaml`, `.cursor/`, `.claude/`, GitHub
+  template filenames, and the repository name.
+- English for code comments, docs, ADRs, and agent instructions.
+- Ordinary commits have no attribution trailers (`Co-authored-by`,
+  `Generated-by`, "made with").
+- One mutable owner per resource. One agent owns one issue, branch, and
+  worktree. Do not edit, rebase, or push another agent's branch. Preserve
+  concurrent and unknown dirty work. Do not force-remove a worktree or branch.
+- Preparation, installation, registration, a successful call, and end-to-end
+  acceptance are separate states. A pull request says which state each claim
+  reached. Nothing is verified without the command output.
+- Do not commit credentials, host inventories, personal chat histories, tokens,
+  or token-bearing URLs. Keep third-party licenses and origin notes
+  (`THIRD_PARTY_NOTICES.md` when vendoring).
+- Update `README.md` and affected docs with verified behaviour only, in the
+  same pull request.
+- Repository visibility is the owner's decision.

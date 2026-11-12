@@ -1,0 +1,83 @@
+minimum_pre_commit_version: "4.0.0"
+default_install_hook_types: [pre-commit, commit-msg, pre-push]
+default_stages: [pre-commit, commit-msg, pre-push]
+
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-format
+        name: ruff format
+        entry: tools/hooks/uv.sh run ruff format
+        language: system
+        types_or: [python, pyi]
+        stages: [pre-commit]
+      - id: ruff-lint
+        name: ruff lint
+        entry: python3 tools/hooks/ruff_lint.py
+        language: system
+        types_or: [python, pyi]
+        stages: [pre-commit]
+      - id: mypy
+        name: mypy
+        entry: tools/hooks/uv.sh run mypy --strict src/qecbench
+        language: system
+        pass_filenames: false
+        types: [python]
+        stages: [pre-commit]
+
+  - repo: https://github.com/kynan/nbstripout
+    rev: "0.9.1"
+    hooks:
+      - id: nbstripout
+        stages: [pre-commit]
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-yaml
+        stages: [pre-commit]
+      - id: check-toml
+        stages: [pre-commit]
+      - id: end-of-file-fixer
+        stages: [pre-commit]
+      - id: trailing-whitespace
+        stages: [pre-commit]
+      - id: no-commit-to-branch
+        args: ["--branch", "main"]
+        stages: [pre-commit]
+
+  - repo: local
+    hooks:
+      - id: check-added-large-files
+        name: check added large files
+        entry: python3 tools/hooks/check_large_files.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+      - id: check-spec-untouched
+        name: spec and data/gold are owner-only
+        entry: python3 tools/check_spec_untouched.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+      - id: conventional-commit
+        name: conventional commit
+        entry: python3 tools/hooks/check_commit_msg.py
+        language: system
+        stages: [commit-msg]
+      - id: deny-push-main
+        name: deny push to main
+        entry: python3 tools/hooks/deny_push_main.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+      - id: make-check
+        name: make check
+        entry: make check
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]

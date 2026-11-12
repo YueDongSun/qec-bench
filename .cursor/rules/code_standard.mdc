@@ -1,0 +1,28 @@
+---
+description: Python and task-format rules for qec-bench
+alwaysApply: true
+---
+
+# Code
+
+- Python 3.12+. `uv` manages the environment. `uv.lock` stays committed.
+  Dependencies are pinned. Add them with `uv add`, never `pip install`.
+- Ruff lint and format, rules E, F, W, I, B, UP, SIM, RUF, N, PL, line length
+  100. `mypy --strict` on `src/qecbench`. Pytest uses `--strict-markers`.
+  Tests are deterministic. Slow tests use `@pytest.mark.slow`.
+- Type hints on `src/`. Docstrings state units and conventions and point at
+  the spec section.
+- No defensive programming: no broad `try/except`, no silent fallback, no
+  "just in case" branch, no extra input sanitising. Fail with a clear error.
+- No speculative abstraction. Build what the current spec needs.
+- No checksum or sha256 manifests, signing, or certificate machinery.
+- No notebooks in `src/` or `tasks/`. Exploratory notebooks go in `notebooks/`
+  with outputs stripped.
+- Numerical code uses numpy and scipy. Prefer exact diagonalisation for
+  references and document the matrix basis order. Do not add those libraries
+  until a task needs them, and do not invent the basis order.
+- The tolerance model is TBD by owner (TODO(owner)). Do not invent a line
+  format or a loader. The format demo uses a plain exact comparison.
+- Task ids: `<family>_<nnn>_<slug>`. Scaffold with
+  `uv run python tools/new_task.py <task_id>`.
+- A change to task format, public API, or directory layout needs a new ADR.

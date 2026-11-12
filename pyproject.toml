@@ -1,0 +1,50 @@
+[project]
+name = "qecbench"
+version = "0.0.0"
+description = "Execution-graded agent benchmark for quantum error correction and error mitigation."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+authors = [{ name = "Yuedong Sun" }]
+dependencies = []
+
+[dependency-groups]
+dev = [
+  "mypy==2.4.1",
+  "pre-commit==4.7.0",
+  "pytest==9.2.0",
+  "ruff==0.17.4",
+]
+
+[build-system]
+requires = ["hatchling==1.33.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/qecbench"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests", "tools", "tasks"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "N", "PL"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["qecbench"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+mypy_path = "src"
+packages = ["qecbench"]
+
+[tool.pytest.ini_options]
+strict_markers = true
+testpaths = ["tests"]
+addopts = ["-q", "--strict-markers"]
+markers = [
+  "slow: marks tests as slow; make check runs them",
+]
+pythonpath = [".", "src"]

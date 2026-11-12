@@ -1,0 +1,28 @@
+name: Task
+description: Add or change one benchmark task.
+title: "task: "
+labels: ["task"]
+body:
+  - type: input
+    id: spec_reference
+    attributes:
+      label: Spec reference
+      description: Exact spec anchor, for example spec/TASKS.md#task-families.
+      placeholder: spec/TASKS.md#task-families
+    validations:
+      required: true
+  - type: input
+    id: task_id
+    attributes:
+      label: Task id
+      description: snake_case family_nnn_slug.
+      placeholder: example_000_smoke
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: File scope
+      description: Files this issue may change. Do not include spec/ or data/gold/.
+    validations:
+      required: true
