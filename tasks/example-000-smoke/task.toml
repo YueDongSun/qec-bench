@@ -1,0 +1,18 @@
+id = "example-000-smoke"
+family = "example"
+difficulty = "smoke"
+spec_ref = "spec/TASKS.md#example-000-smoke"
+author = "m0-scaffold"
+status = "draft"
+
+[timeouts]
+sec = 120
+
+[demo]
+# FORMAT DEMO parameters. Not a noise model. spec/SCIENCE.md is TODO(owner).
+circuit = "repetition_code:memory"
+distance = 3
+rounds = 3
+shots = 200
+seed = 1
+before_round_data_depolarization = 0.01

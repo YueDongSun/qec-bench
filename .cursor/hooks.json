@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "uv run python -m tools.hooks.before_shell",
+        "failClosed": true
+      }
+    ],
+    "beforeReadFile": [
+      {
+        "command": "uv run python -m tools.hooks.before_read_file",
+        "failClosed": true
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "uv run python -m tools.hooks.guard_edit",
+        "matcher": "Write|Edit|StrReplace|Delete|MultiEdit|ApplyPatch",
+        "failClosed": true
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": "uv run python -m tools.hooks.after_file_edit"
+      }
+    ],
+    "stop": [
+      {
+        "command": "uv run python -m tools.hooks.stop",
+        "timeout": 600
+      }
+    ]
+  }
+}

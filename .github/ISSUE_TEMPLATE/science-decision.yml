@@ -1,0 +1,25 @@
+name: Science decision
+description: A missing or ambiguous spec point. Agents stop the blocked piece of work.
+title: "spec: "
+labels: ["needs-science-decision"]
+body:
+  - type: textarea
+    id: quote
+    attributes:
+      label: Spec line
+      description: Quote the exact spec line, including the path and heading.
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Concrete options
+      description: List the options. Do not pick one in code.
+    validations:
+      required: true
+  - type: textarea
+    id: blocked
+    attributes:
+      label: Work that is stopped
+    validations:
+      required: true

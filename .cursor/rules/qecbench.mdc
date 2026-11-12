@@ -1,0 +1,16 @@
+---
+description: qec-bench agent contract
+alwaysApply: true
+---
+
+# qec-bench
+
+`spec/` and `data/gold/` are owner-only. Do not edit them and do not set `OWNER_SPEC_EDIT`. If a spec point is missing, open a `needs-science-decision` issue, quote the spec line, list the options, and stop that piece of work.
+
+Do not invent conventions, tolerances, or literature values. Behaviour traces to `spec/` or `docs/adr/`.
+
+Python 3.11 and uv. Add packages with `uv add`, not `pip install`. Conventional Commits with a scope from `task`, `verify`, `reference`, `taskfmt`, `tooling`, `docs`, `ci`, `deps`, `spec`.
+
+Do not force-push, push to `main`, commit with `--no-verify`, or `git reset --hard` on `main`. The owner merges. `make check` must pass.
+
+`tasks/example-000-smoke` is a format demo with no pass threshold.

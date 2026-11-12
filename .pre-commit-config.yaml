@@ -1,0 +1,61 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-yaml
+      - id: check-toml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-added-large-files
+        name: check added large files
+        args: ["--maxkb=500"]
+        exclude: ^data/gold/
+      - id: check-added-large-files
+        name: check added large files in data/gold
+        args: ["--maxkb=5120"]
+        files: ^data/gold/
+      - id: no-commit-to-branch
+        args: ["--branch", "main"]
+
+  - repo: https://github.com/kynan/nbstripout
+    rev: "0.9.1"
+    hooks:
+      - id: nbstripout
+
+  - repo: local
+    hooks:
+      - id: ruff-format
+        name: ruff format
+        entry: uv run ruff format
+        language: system
+        types: [python]
+      - id: ruff-check
+        name: ruff check
+        entry: uv run ruff check
+        language: system
+        types: [python]
+      - id: mypy
+        name: mypy
+        entry: uv run mypy
+        language: system
+        pass_filenames: false
+        files: ^src/
+        types: [python]
+      - id: check-spec-untouched
+        name: reject spec and data/gold edits
+        entry: uv run python tools/check_spec_untouched.py
+        language: system
+        pass_filenames: false
+        always_run: true
+      - id: conventional-commit
+        name: conventional commits
+        entry: uv run python -m tools.hooks.commit_msg
+        language: system
+        stages: [commit-msg]
+      - id: pre-push-check
+        name: refuse main and run make check
+        entry: uv run python -m tools.hooks.pre_push
+        language: system
+        stages: [pre-push]
+        pass_filenames: false
+        always_run: true
