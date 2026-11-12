@@ -1,0 +1,11 @@
+# Format demo. Not a scientific task. See docs/adr/0002-task-format.md.
+id = "example_000_smoke"
+family = "example"
+difficulty = "easy"
+spec_reference = "spec/TASKS.md#task-families"
+author = "qecbench"
+status = "draft"
+format_demo = true
+
+[timeouts]
+run_sec = 30

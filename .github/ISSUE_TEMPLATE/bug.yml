@@ -1,0 +1,24 @@
+name: Bug
+description: Report a defect in the engineering, not a missing scientific choice.
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: input
+    id: spec_reference
+    attributes:
+      label: Spec reference
+      description: Exact spec anchor, or "none" if the bug is only in tooling.
+    validations:
+      required: true

@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "python3 tools/hooks/dispatch.py"
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "python3 tools/hooks/dispatch.py",
+        "matcher": "Write|Delete"
+      }
+    ],
+    "beforeReadFile": [
+      {
+        "command": "python3 tools/hooks/dispatch.py"
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": "python3 tools/hooks/dispatch.py"
+      }
+    ],
+    "stop": [
+      {
+        "command": "python3 tools/hooks/dispatch.py",
+        "timeout": 600,
+        "loop_limit": 5
+      }
+    ]
+  }
+}
