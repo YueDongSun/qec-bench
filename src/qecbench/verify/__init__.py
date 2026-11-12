@@ -1,5 +1,5 @@
 """Verifier helpers.
 
-Named numeric tolerances are read from ``spec/TOLERANCES.md``.
-See ``docs/adr/0002-task-format.md``. The owner has not written any values yet.
+The tolerance model is TBD by owner (TODO(owner)). See ``spec/TOLERANCES.md``
+and ``docs/adr/0002-task-format.md``.
 """

@@ -37,20 +37,8 @@ The verifier checks exact equality with that object. `demo_token` is a
 dimensionless scaffold token, not a physical observable. A format demo cannot
 be `status = ready`.
 
-A `ready` task that is not a format demo must call
-`qecbench.verify.tolerances.load_tolerance` so numeric bounds come from
-`spec/TOLERANCES.md` by name. The owner has not written any bounds. The line
-format, when they do, is a bullet:
-
-```text
-- `name`: abs=<float>, rel=<float>
-```
-
-`name` is snake_case. This syntax is an engineering choice so the loader has
-something to parse. It does not define how `abs` and `rel` combine; that
-waits on `spec/SCIENCE.md` (statistical acceptance) and
-`spec/TOLERANCES.md`. The loader raises if the name is missing. It does not
-fill in a number.
+The tolerance model, including any line format in `spec/TOLERANCES.md`, is
+TBD by owner (TODO(owner)). This record does not define one.
 
 `make validate` checks every task directory: structure, the solution's tests
 pass, and a do-nothing run (no `solve.sh`) fails the tests.
@@ -68,5 +56,5 @@ environment. Running tasks inside Docker is later engineering.
 
 Scientific tasks stay blocked until the owner fills `spec/`. The format demo
 keeps `make validate` honest without inventing a tolerance. Changing this
-layout or the public names (`payload`, `load_tolerance`, `validate_task_dir`,
+layout or the public names (`payload`, `validate_task_dir`,
 `run_task`, `check_all`, `create_task`) requires a new ADR.

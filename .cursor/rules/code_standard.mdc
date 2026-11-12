@@ -21,9 +21,8 @@ alwaysApply: true
 - Numerical code uses numpy and scipy. Prefer exact diagonalisation for
   references and document the matrix basis order. Do not add those libraries
   until a task needs them, and do not invent the basis order.
-- Tolerances are read by name from `spec/TOLERANCES.md` via
-  `qecbench.verify.tolerances.load_tolerance`. Never hard-code a magic
-  threshold. The format demo is the documented exception in ADR 0002.
+- The tolerance model is TBD by owner (TODO(owner)). Do not invent a line
+  format or a loader. The format demo uses a plain exact comparison.
 - Task ids: `<family>_<nnn>_<slug>`. Scaffold with
   `uv run python tools/new_task.py <task_id>`.
 - A change to task format, public API, or directory layout needs a new ADR.

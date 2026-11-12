@@ -49,17 +49,6 @@ def test_unpinned_image_is_rejected(tmp_path: Path) -> None:
         validate_task_dir(task_dir)
 
 
-def test_ready_task_must_name_a_tolerance(tmp_path: Path) -> None:
-    task_dir = tmp_path / "example_000_smoke"
-    shutil.copytree(repo_root() / "tasks" / "example_000_smoke", task_dir)
-    toml = (task_dir / "task.toml").read_text(encoding="utf-8")
-    toml = toml.replace('status = "draft"', 'status = "ready"')
-    toml = toml.replace("format_demo = true", "format_demo = false")
-    (task_dir / "task.toml").write_text(toml, encoding="utf-8")
-    with pytest.raises(TaskFormatError, match="load_tolerance"):
-        validate_task_dir(task_dir)
-
-
 def test_scaffold_solution_passes_and_empty_run_fails(tmp_path: Path) -> None:
     created = create_task("example_001_scaffold", root=tmp_path)
     validate_task_dir(created)

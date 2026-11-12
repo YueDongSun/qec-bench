@@ -148,12 +148,7 @@ def validate_task_dir(task_dir: Path) -> TaskSpec:
         raise TaskFormatError(f"{spec.task_id}: instruction.md is empty")
     _check_dockerfile(task_dir)
     _require_file(task_dir, "solution/solve.sh")
-    test_source = _require_file(task_dir, "tests/test_outputs.py").read_text(encoding="utf-8")
-    if spec.status == "ready" and not spec.format_demo and "load_tolerance" not in test_source:
-        raise TaskFormatError(
-            f"{spec.task_id}: a ready task must load tolerances by name "
-            "via qecbench.verify.tolerances.load_tolerance"
-        )
+    _require_file(task_dir, "tests/test_outputs.py")
     return spec
 
 
