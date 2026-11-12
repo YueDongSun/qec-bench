@@ -15,7 +15,8 @@ commands, or parallel agents will bypass whichever layer is weakest.
 - Python 3.12, dependencies in `pyproject.toml`, lockfile `uv.lock` committed.
   Add dependencies with `uv add`. `pip install` is denied.
 - `make setup` runs `uv sync --frozen --all-groups` and installs the
-  pre-commit, commit-msg, and pre-push hooks.
+  pre-commit, commit-msg, and pre-push hooks. If `core.hooksPath` is set,
+  git ignores `.git/hooks`, so setup stops and tells you to unset it.
 - `make check` runs `fmt-check`, `lint` (`ruff check` with `--fix` off),
   `mypy --strict` on `src/qecbench`, pytest (including `slow`), and `validate`.
 - Ruff rule set: E, F, W, I, B, UP, SIM, RUF, N, PL. Line length 100.
