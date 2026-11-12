@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from tools.check_spec_untouched import paths_from_name_status
 from tools.hooks.check_large_files import oversized
 from tools.hooks.dispatch import CURSOR_DENY_EXIT, handle
 from tools.hooks.policy import (
@@ -269,6 +270,42 @@ def test_large_file_policy(tmp_path: Path) -> None:
 def test_oversized_helper() -> None:
     assert oversized([("src/a.py", DEFAULT_MAX_BYTES)]) == []
     assert oversized([("src/a.py", DEFAULT_MAX_BYTES + 1)]) != []
+
+
+def test_spec_rename_out_of_owner_tree_is_rejected(tmp_path: Path) -> None:
+    _git_init(tmp_path)
+    spec = tmp_path / "spec"
+    spec.mkdir()
+    (spec / "SCIENCE.md").write_text("# Science\n\n## Scope\n\nTODO(owner)\n", encoding="utf-8")
+    subprocess.run(["git", "add", "spec/SCIENCE.md"], cwd=tmp_path, check=True)
+    subprocess.run(
+        ["git", "commit", "-m", "chore(spec): skeleton"],
+        cwd=tmp_path,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    subprocess.run(["git", "mv", "spec/SCIENCE.md", "SCIENCE.md"], cwd=tmp_path, check=True)
+    env = {key: value for key, value in os.environ.items() if key != "OWNER_SPEC_EDIT"}
+    blocked = subprocess.run(
+        [sys.executable, str(_ROOT / "tools" / "check_spec_untouched.py")],
+        cwd=tmp_path,
+        check=False,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    assert blocked.returncode == 1
+    assert "spec/SCIENCE.md" in blocked.stderr
+
+
+def test_name_status_keeps_rename_source() -> None:
+    payload = "R100\0spec/SCIENCE.md\0SCIENCE.md\0M\0src/qecbench/repo.py\0"
+    assert paths_from_name_status(payload) == [
+        "spec/SCIENCE.md",
+        "SCIENCE.md",
+        "src/qecbench/repo.py",
+    ]
 
 
 def test_spec_untouched_hook(tmp_path: Path) -> None:

@@ -15,15 +15,51 @@ if str(_ROOT) not in sys.path:
 from tools.hooks.policy import OWNER_EDIT_DENIAL, is_owner_only  # noqa: E402
 
 
+def paths_from_name_status(payload: str) -> list[str]:
+    """Return every path in a NUL-terminated ``git diff --name-status -z`` record.
+
+    Rename and copy records contain the source and the destination. A rename
+    out of ``spec/`` or ``data/gold/`` must still name the source. ``--name-only``
+    with rename detection reports only the destination.
+    """
+    tokens = payload.split("\0")
+    if tokens and tokens[-1] == "":
+        tokens = tokens[:-1]
+    paths: list[str] = []
+    index = 0
+    while index < len(tokens):
+        status = tokens[index]
+        index += 1
+        if status[:1] in {"R", "C"}:
+            if index + 1 >= len(tokens):
+                raise SystemExit(f"truncated git name-status record: {status}")
+            paths.extend((tokens[index], tokens[index + 1]))
+            index += 2
+            continue
+        if index >= len(tokens):
+            raise SystemExit(f"truncated git name-status record: {status}")
+        paths.append(tokens[index])
+        index += 1
+    return paths
+
+
 def staged_paths() -> list[str]:
-    """Return staged paths, including deletions."""
+    """Return staged paths, including deletions and both sides of a rename."""
     result = subprocess.run(
-        ["git", "diff", "--cached", "--name-only"],
+        [
+            "git",
+            "diff",
+            "--cached",
+            "--name-status",
+            "-z",
+            "--find-renames",
+            "--find-copies",
+        ],
         check=True,
         capture_output=True,
         text=True,
     )
-    return [line for line in result.stdout.splitlines() if line]
+    return paths_from_name_status(result.stdout)
 
 
 def owner_violations(paths: list[str], *, owner_edit: bool) -> list[str]:
