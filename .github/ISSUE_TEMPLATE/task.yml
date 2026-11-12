@@ -1,0 +1,19 @@
+name: Task
+description: A new execution-graded task
+title: "feat(task): "
+labels: ["task"]
+body:
+  - type: input
+    id: spec_ref
+    attributes:
+      label: Spec reference
+      description: Exact spec path and heading, for example spec/TASKS.md#decoding
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Inputs, outputs, and pass criterion
+      description: Quote the spec. Do not invent a tolerance.
+    validations:
+      required: true

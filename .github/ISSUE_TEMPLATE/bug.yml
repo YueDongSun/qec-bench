@@ -1,0 +1,18 @@
+name: Bug
+description: A defect in tooling, a verifier, or a task harness
+title: "fix: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: textarea
+    id: spec_ref
+    attributes:
+      label: Spec reference
+      description: Exact spec line if the bug is about a scientific check, otherwise "none"
+    validations:
+      required: true
