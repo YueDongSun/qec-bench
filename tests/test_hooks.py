@@ -47,7 +47,17 @@ def test_owner_paths() -> None:
         ("git push origin feature", False),
         ("git push origin main", True),
         ("git push -u origin main", True),
+        ("git push upstream main", True),
+        ("git push origin HEAD:main", True),
+        ("git push upstream HEAD:main", True),
+        ("git push origin feature:main", True),
+        ("git push origin HEAD:refs/heads/main", True),
+        ("git push origin refs/heads/feature:refs/heads/main", True),
+        ("git push origin :main", True),
+        ("git push origin main:feature", False),
+        ("git push origin refs/heads/main:refs/heads/feature", False),
         ("git push origin maintenance", False),
+        ("git push origin main-backup", False),
         ("git commit --no-verify -m 'chore(tooling): x'", True),
         ("git commit -n -m 'chore(tooling): x'", True),
         ("git commit -m 'chore(tooling): x'", False),
@@ -84,6 +94,26 @@ def test_cursor_and_claude_shell_hooks_agree() -> None:
     assert cursor_code == CURSOR_DENY_EXIT
     assert cursor_body["permission"] == "deny"
     assert "force" in str(cursor_body["agent_message"])
+    assert claude_code == 0
+    inner = claude_body["hookSpecificOutput"]
+    assert isinstance(inner, dict)
+    assert inner["permissionDecision"] == "deny"
+
+
+def test_cursor_and_claude_deny_refspec_targeting_main() -> None:
+    command = "git push upstream HEAD:main"
+    cursor_code, cursor_body = handle(
+        {"hook_event_name": "beforeShellExecution", "command": command}
+    )
+    claude_code, claude_body = handle(
+        {
+            "hook_event_name": "PreToolUse",
+            "tool_name": "Bash",
+            "tool_input": {"command": command},
+        }
+    )
+    assert cursor_code == CURSOR_DENY_EXIT
+    assert cursor_body["permission"] == "deny"
     assert claude_code == 0
     inner = claude_body["hookSpecificOutput"]
     assert isinstance(inner, dict)
@@ -406,6 +436,30 @@ def test_ruff_lint_ci_mode() -> None:
     ci = ruff_check_command(["src/qecbench/repo.py"], ci=True)
     assert "--fix" in local
     assert "--fix" not in ci
+
+
+@pytest.mark.parametrize(
+    "tool_name",
+    ["Write", "Edit", "StrReplace", "Delete", "MultiEdit", "ApplyPatch"],
+)
+def test_cursor_pretool_denies_owner_edits(tool_name: str) -> None:
+    code, body = handle(
+        {
+            "hook_event_name": "preToolUse",
+            "tool_name": tool_name,
+            "tool_input": {"file_path": "data/gold/values.csv"},
+        }
+    )
+    assert code == CURSOR_DENY_EXIT
+    assert body["permission"] == "deny"
+
+
+def test_cursor_shell_hook_fails_closed_and_matcher_lists_edit_tools() -> None:
+    cursor = json.loads((_ROOT / ".cursor" / "hooks.json").read_text(encoding="utf-8"))
+    shell_hook = cursor["hooks"]["beforeShellExecution"][0]
+    assert shell_hook["failClosed"] is True
+    matcher = cursor["hooks"]["preToolUse"][0]["matcher"]
+    assert matcher == "Write|Edit|StrReplace|Delete|MultiEdit|ApplyPatch"
 
 
 def test_hook_configs_share_dispatch() -> None:

@@ -19,7 +19,9 @@ from tools.hooks.policy import (  # noqa: E402
 )
 
 _EDIT_TOOLS = frozenset({"Edit", "Write", "MultiEdit"})
-_CURSOR_WRITE_TOOLS = frozenset({"Write", "Delete"})
+_CURSOR_WRITE_TOOLS = frozenset(
+    {"Write", "Edit", "StrReplace", "Delete", "MultiEdit", "ApplyPatch"}
+)
 _PYTHON_SUFFIXES = frozenset({".py", ".pyi"})
 CURSOR_DENY_EXIT = 2
 

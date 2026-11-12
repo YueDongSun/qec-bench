@@ -22,7 +22,8 @@ _HEADER = re.compile(
 )
 _TRAILER = re.compile(r"(?i)^(co-authored-by|generated-by|made-with)\s*:")
 _FORCE_PUSH = re.compile(r"\bgit\s+push\b[^\n;&|]*(\s--force-with-lease\b|\s--force\b|\s-f\b)")
-_PUSH_MAIN = re.compile(r"\bgit\s+push\b[^\n;&|]*\sorigin\s+main\b")
+_PUSH_SEGMENT = re.compile(r"\bgit\s+push\b([^\n;&|]*)")
+_MAIN_DESTINATION = re.compile(r"(?:^|\s)\+?(?:[^:\s]*:)?(?:refs/heads/)?main(?=\s|$)")
 _NO_VERIFY = re.compile(r"\bgit\s+commit\b[^\n;&|]*(--no-verify\b|\s-n\b)")
 _HARD_RESET = re.compile(r"\bgit\s+reset\s+--hard\s+(\S+)")
 _PIP = re.compile(r"(?:^|[\s;&|])pip3?\s+install\b")
@@ -61,6 +62,19 @@ def size_limit(path: str) -> int:
     return DEFAULT_MAX_BYTES
 
 
+def _pushes_to_main(command: str) -> bool:
+    """Return whether a ``git push`` refspec destination is ``main``.
+
+    The remote name is not special: ``origin``, ``upstream``, and any other
+    remote are the same. ``HEAD:main``, ``feature:main``, and ``refs/heads/main``
+    all target ``main``. A source of ``main`` with another destination does not.
+    """
+    return any(
+        _MAIN_DESTINATION.search(segment.group(1)) is not None
+        for segment in _PUSH_SEGMENT.finditer(command)
+    )
+
+
 def denied_shell_reason(command: str) -> str | None:
     """Return a denial message, or ``None`` when the command may run."""
     reset = _HARD_RESET.search(command)
@@ -75,8 +89,8 @@ def denied_shell_reason(command: str) -> str | None:
         (pip_install, "pip install is denied. Add dependencies with uv add."),
         (_FORCE_PUSH.search(command) is not None, "git push --force is denied."),
         (
-            _PUSH_MAIN.search(command) is not None,
-            "git push origin main is denied. Open a pull request; the owner merges.",
+            _pushes_to_main(command),
+            "git push targeting main is denied. Open a pull request; the owner merges.",
         ),
         (_NO_VERIFY.search(command) is not None, "git commit --no-verify is denied."),
         (reset_on_main, "git reset --hard on main is denied."),

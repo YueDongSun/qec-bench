@@ -3,13 +3,14 @@
   "hooks": {
     "beforeShellExecution": [
       {
-        "command": "python3 tools/hooks/dispatch.py"
+        "command": "python3 tools/hooks/dispatch.py",
+        "failClosed": true
       }
     ],
     "preToolUse": [
       {
         "command": "python3 tools/hooks/dispatch.py",
-        "matcher": "Write|Delete"
+        "matcher": "Write|Edit|StrReplace|Delete|MultiEdit|ApplyPatch"
       }
     ],
     "beforeReadFile": [
